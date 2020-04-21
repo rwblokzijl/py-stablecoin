@@ -100,7 +100,7 @@ if __name__ == "__main__":
     processes = []
     # processes.append(subprocess.Popen(sys.executable + ' .\\Client.py --rendezvousPoint 127.0.0.1:4321 --name "My sovereign account" --guiPort 80 --log text.html'))
     for i in range(0, args.dummyNodes):
-        processes.append(subprocess.Popen(sys.executable + ' Client.py --rendezvousPoint 127.0.0.1:4321 --name "Super smooth node no. {}" --port {}'.format(i,1964 +  i),shell=True))
+        processes.append(subprocess.Popen(sys.executable + ' Client.py --rendezvousPoint 127.0.0.1:4321 --name "Super smooth node no. {}" --port {}'.format(i,11964 +  i),shell=True))
 
     print("Rendezvous service up and running")
     print(meeting_point.server.address)
