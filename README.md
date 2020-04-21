@@ -11,7 +11,7 @@ must:
 - manage the ownership of real Euros in a permissioned network
 - allow parties to deposit euros into a bank account, and get representative
 tokens that can have all the technical properties of money, plus:
-    * programmability,
+    - programmability,
     - transparency, and
     - accountability,
 
@@ -49,9 +49,9 @@ If you want to run without docker:
 To get a working demo to play with, a rendezvous server and some clients are
 needed.
 
--The client can be run both on the local machine as well as in docker (docker is
+- The client can be run both on the local machine as well as in docker (docker is
 recommended)
--The rendezvous server can currently only be run on the local machine.
+- The rendezvous server can currently only be run on the local machine.
 
 When these are running, interaction with the clients happens through a web
 interface.
