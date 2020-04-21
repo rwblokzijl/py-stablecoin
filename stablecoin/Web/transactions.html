@@ -1,0 +1,125 @@
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+  <title>Transactions - JB Morefunds</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="index.css">
+
+  <!-- Datatables import stuff -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.18/datatables.min.css"/>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.18/datatables.min.js"></script>
+
+
+
+</head>
+<body>
+
+  <nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="./index.html">JB Morefunds</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li ><a href="./index.html">Home</a></li>
+        <li class="active"><a href="./transactions.html">Transactions</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Extra<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#"  data-toggle="modal" data-target="#logModal" onclick="getLog()">Show log</a></li>
+            <li><a href="#">Shutdown</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+
+
+  <div class="container">
+   <h1> Transaction overview </h1>
+   <br>
+
+   <div class="table-responsive">          
+    <table class="table" id="myTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Counter Party</th>
+          <th>Euro (€)</th>
+        </tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+    </table>
+  </div>
+  <div class="text-center">
+    <button type="button" class="btn btn-default" onClick="getTransactions()">Show More </button> 
+    <br>
+    <br>
+  </div>
+</div>
+
+
+
+<!-- Modal -->
+  <div class="modal fade" id="logModal" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Log</h4>
+        </div>
+        <div class="modal-body" id=logModalDiv style="overflow-y:auto; max-height: 420px;">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  var next = ""
+  function getTransactions(){
+    $.ajax({
+      url: "/API/v0.1/transactions?length=15&from=" + next
+    }).then(function(data) {
+      var len = data.transactions.length;
+      var i = 0;
+      text = ""
+      for (; i < len;) {
+        text +=   "<tr><td>" + data.transactions[i][0] + "</td><td>" + data.transactions[i][1] + "</td><td>" + data.transactions[i][2] +  "</td></tr>"
+        i++;
+      }
+      console.log(data);
+      next = data.transactions[i-1][3];
+      console.log(next)
+      $("#myTable > tbody:last-child").append(text);
+    });
+  }
+
+  function getLog(){
+    console.log("Trying to fetch logs")
+    $.ajax({
+      url: "/API/v0.1/log"
+    }).then(function(data) {
+      console.log(data);
+      document.getElementById("logModalDiv").innerHTML = data;
+    }); 
+  }
+
+  $(document).ready(function() {
+    getTransactions();
+  });
+
+</script>
+
+</body>
+</html> 

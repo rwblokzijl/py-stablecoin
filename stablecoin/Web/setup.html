@@ -1,0 +1,101 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Overview - JB Morefunds</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script>function submitForm(){alert("Transactions succesfull");};</script>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+<nav class="navbar navbar-inverse navbar-static-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="./index.html">JB Morefunds</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="./index.html">Home</a></li>
+      <li><a href="./transactions.html">Transactions</a></li>
+    </ul>
+  </div>
+</nav>
+
+
+
+<div class="container">
+	<h1> Setup Wizard </h1>
+	<form class="form" action="/action_page.php">
+		<div class="form-group">
+		<label for="friendlyname">Account holder:</label> <span id=friendlyName-alert  style="color:tomato"></span>
+		<input type="text" class="form-control" id="friendlyname" placeholder="Mr. J. D. Doe">
+		</div>
+		<div class="form-group">
+		<label for="rendezvous">Rendezvous point:</label>  <span id=rendezvous-alert  style="color:tomato"></span>
+		<input type="text" class="form-control" id="rendezvous" placeholder="127.0.0.1:4321">
+		</div>
+<!-- 		<a data-toggle="collapse" data-target="#demo">Advanced</a>
+	  	<div id="demo" class="collapse">
+		    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+		    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+		    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+	  	</div> -->
+	</form> 
+	  	<button type="button" class="btn btn-default" onClick="sendConfiguration()">Save</button>
+</div>
+
+</div>
+
+
+<script>
+function sendConfiguration(){
+	if (document.getElementById("friendlyname").value == ""){
+		document.getElementById("friendlyName-alert").innerHTML = "Please enter your full name and title";	
+		return;
+	}
+	else{
+		document.getElementById("friendlyName-alert").innerHTML = "";			
+	}
+	
+	if (document.getElementById("rendezvous").value == ""){
+		document.getElementById("rendezvous-alert").innerHTML = "Please enter the address of the rendezvous point (IP:port)";	
+		return;
+	}
+	else{
+		document.getElementById("rendezvous-alert").innerHTML = "";			
+	}
+	
+
+
+	
+	$.ajax({
+	    url: "/API/v0.1/setup",
+	    dataType: 'json',
+	    type: 'post',
+	    contentType: 'application/json',
+	    data: JSON.stringify( { "FriendlyName": $('#friendlyname').val(), "Address":  $('#rendezvous').val()} ),
+	    processData: false,
+	    success: function( data, textStatus, jQxhr ){
+	        console.log(data);
+	        console.log("Trying to redirect now")
+	        location.reload(); 
+	    },
+	    error: function( jqXhr, textStatus, errorThrown ){
+	        console.log( errorThrown );
+	    }
+	});
+}
+
+$(document).ready(function() {
+
+});
+
+
+</script>
+
+</body>
+</html> 

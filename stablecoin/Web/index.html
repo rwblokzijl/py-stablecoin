@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Overview - JB Morefunds</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script>function submitForm(){alert("Transactions succesfull");};</script>
+    <link rel="stylesheet" href="index.css">
+  </head>
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-static-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="./index.html">JB Morefunds</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="./index.html">Home</a></li>
+          <li><a href="./transactions.html">Transactions</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Extra<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#"  data-toggle="modal" data-target="#logModal" onclick="getLog()">Show log</a></li>
+              <li><a href="#">Shutdown</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+
+
+    <div class="container">
+      <h1> Overview </h1>
+      <br>
+      <button type="button"  class="btn btn-default" data-toggle="modal" data-target="#paymentModal" onClick="getPartnerList()"> Transfer Credits</button> <button type="button" class="btn btn-default">Payment Requests </button>
+      <br>
+      <br>
+      <div class="panel panel-default">
+        <div class="panel-heading"> Payment accounts </div>
+        <div class="list-group">
+          <a id="tooltip_1" href="./transactions.html" class="list-group-item" data-toggle="tooltip" title="Account address: -"> <span id="account_name_1">-</span> <span id="balance_1" style="float:right;">€-</span>
+            <br> <small id="description_1">-</small></a>
+          <!-- <a href="./transactions.html" class="list-group-item" data-toggle="tooltip" title="Account address: 61RRPmpiZ4pwETWUashHBFtCOXHaYGfp/juVx43c3Fw=">Hr. J. Brouwer <span id="balance_2" style="float:right;">€-</span> -->
+          <!-- <br> <small>Business Account</small></a> -->
+        </div>
+      </div>
+    </div>
+
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="logModal" role="dialog">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Log</h4>
+          </div>
+          <div class="modal-body" id=logModalDiv style="overflow-y:auto; max-height: 420px;">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="paymentModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">New Transfer</h4>
+          </div>
+          <div class="modal-body">
+            <form action="#">
+              <div class="form-group">
+                <label for="sel1">Recipient:</label> <span id=recepient-alert  style="color:tomato"></span>
+                <select class="form-control" id="sel1" onchange="selectedPartner()">
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="RecepientID">ID of recipient:</label>
+                <input type="text" class="form-control"  id="RecepientID" disabled="True">
+              </div>
+
+
+              <div class="form-group">
+                <label for="amount">Amount:</label> <span id=amount-alert  style="color:tomato"></span>
+
+                <input type="text" class="form-control" id="amount">
+              </div>
+
+
+
+
+              <div class="form-group">
+                <label for="comment">Comment:</label>
+                <textarea class="form-control" rows="5" id="comment"></textarea>
+              </div>
+
+
+              <button id="sendbutton" type="button" class="btn btn-default" onClick="startTransaction()">Send</button>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <script>
+var balance = 0;
+function getPartnerList(){
+  nodes = [];
+  $.ajax({
+    url: "/API/v0.1/partners"
+  }).then(function(data) {
+
+    var option = document.createElement('option');
+    nodes = data.Nodes.slice();
+    var options = [];
+    var len = nodes.length;
+    var i = 0;
+    for (; i < len;) {
+      option.text = nodes[i][0];
+      option.value = nodes[i][1];
+      options.push(option.outerHTML);
+      i++;
+    }
+    document.getElementById("sel1").options.length = 0;
+    document.getElementById("amount").value = "";
+    document.getElementById("sel1").insertAdjacentHTML('beforeEnd', options.join('\n'));
+    document.getElementById("sel1").value = "";
+  });
+}
+
+function selectedPartner(){
+  document.getElementById("RecepientID").value = document.getElementById("sel1").value;
+}
+
+function getAccountDetails(){
+  $.ajax({
+    url: "/API/v0.1/account"
+  }).then(function(data) {
+    console.log(data.balance);
+    document.getElementById("balance_1").innerHTML = "€" + data.balance + ".00";
+    document.getElementById("account_name_1").innerHTML = data.Name;
+    document.getElementById("description_1").innerHTML = data.Type;
+    document.getElementById("tooltip_1").title = "Address: " + data.Address;
+    balance = parseInt(data.balance);
+  });
+}
+
+function startTransaction(){
+  console.log(document.getElementById("sel1").value);
+  amount = parseInt(document.getElementById("amount").value)
+    if (document.getElementById("RecepientID").value == ""){
+      document.getElementById("recepient-alert").innerHTML = "Please select a recipient";
+      return;
+    }
+    else{
+      document.getElementById("recepient-alert").innerHTML = "";
+    }
+
+  if (amount <= 0) {
+    document.getElementById("amount-alert").innerHTML = "Please enter a value strictly larger than zero.";
+    console.log("Please enter a value larger strictly larger than 0");
+    return;
+  }
+  else if ((amount > balance) && (document.getElementById("sendbutton").innerHTML == "Send")){
+    document.getElementById("amount-alert").innerHTML = "You have insufficient funds.";
+    document.getElementById("sendbutton").innerHTML = "Send anyway"
+      console.log("You don't have sufficient funds")
+      return;
+  }
+  else if ((amount > balance) && (document.getElementById("sendbutton").innerHTML == "Send anyway")){
+    document.getElementById("amount-alert").innerHTML = "";
+    document.getElementById("sendbutton").innerHTML = "Send"
+      console.log("You're executing a malicious transaction'")
+  }
+  else if (isNaN(amount)){
+    document.getElementById("amount-alert").innerHTML = "Please enter an whole number.";
+    return;
+  }
+  else{
+    document.getElementById("amount-alert").innerHTML = "";
+  }
+
+  $('#sendbutton').prop('disabled', true);
+  $.ajax({
+    url: "/API/v0.1/startTransaction",
+    dataType: 'json',
+    type: 'post',
+    contentType: 'application/json',
+    data: JSON.stringify( { "Recepient": $('#RecepientID').val(), "Value": amount} ),
+    processData: false,
+    success: function( data, textStatus, jQxhr ){
+      console.log(data);
+      $('#paymentModal').modal('hide');
+      $('#sendbutton').prop('disabled', false);
+      getAccountDetails();
+    },
+    error: function( jqXhr, textStatus, errorThrown ){
+      console.log( errorThrown );
+      $('#sendbutton').prop('disabled', false);
+    }
+  });
+}
+
+function getLog(){
+  console.log("Trying to fetch logs")
+    $.ajax({
+      url: "/API/v0.1/log"
+    }).then(function(data) {
+      console.log(data);
+      document.getElementById("logModalDiv").innerHTML = data;
+    });
+}
+
+$(document).ready(function() {
+  getAccountDetails();
+  // getPartnerList();
+});
+    </script>
+  </body>
+</html>

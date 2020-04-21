@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package trustchain;
+
+message TradeRequest {
+	bytes publicKey = 1;
+	int64 value = 2;
+	repeated bytes blocks = 3;
+}
+
+message TradeReply {
+	bytes proposedBlock = 1;
+	repeated bytes blocks = 2;
+}
+
+message SignatureRequest {
+	bytes transaction = 1;
+	repeated Chain chains = 2;
+	int64 witnessCount = 3;
+}
+
+message Chain {
+	repeated bytes blocks = 1;
+}
+
+message Block {
+	bytes transaction = 1;
+	repeated bytes signatures = 2;
+	repeated Approval witnesses = 3;
+}
+
+message Transaction {
+	uint64 timestamp = 1 ;
+	int64 value = 2;
+	repeated bytes ID = 3;
+	repeated bytes previousHash = 4;
+	repeated uint64 sequence_no = 5;
+	repeated int64 balance = 6; // Todo: MAKE THIS uint64 AGAIN AFTER DEMO IS DONE!!!!
+}
+
+message Approval{
+	bytes ID = 1;
+	uint64 i = 2;
+	bytes signature = 3;
+}
+
+message Nodelist{
+	repeated Node nodes = 1;
+}
+
+message Node {
+	string friendlyName = 1;
+	bytes ID = 2;
+	string IP = 3;
+	uint64 port = 4;
+}
