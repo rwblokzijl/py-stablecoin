@@ -1,7 +1,3 @@
----
-geometry: margin=2cm
----
-
 # The stablecoin demonstrator
 
 
